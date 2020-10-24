@@ -1,0 +1,98 @@
+closest I've gotten...
+
+@STORE_HASH = sqqcsd92c3
+@STORE_DOMAIN = https://titan-supplies.mybigcommerce.com
+@CLIENT_ID = 58ixb0ykrict66qnan2pey4t4odjeav
+@ACCESS_TOKEN = n2jttsoq6l06f0tn0zxe6kcgm58iu9f
+@CLIENT_SECRET = ee3dea04c35e1dbf5c71d5fa2686f727391e65d2ddd44a43dd0b295546664479
+@STOREFRONT_API = Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJFUzI1NiJ9.eyJlYXQiOjE4MDIyODgwMDAsInN1Yl90eXBlIjoyLCJ0b2tlbl90eXBlIjoxLCJjb3JzIjpbImh0dHBzOi8vdGl0YW4tc3VwcGxpZXMubXliaWdjb21tZXJjZS5jb20iXSwiY2lkIjoxLCJpYXQiOjE2MDMxMjcxNzUsInN1YiI6IjU4aXhiMHlrcmljdDY2cW5hbjJwZXk0dDRvZGplYXYiLCJzaWQiOjEwMDE0NTcwNzgsImlzcyI6IkJDIn0.b14Mn17uouJwVfNAabci3zOA_iP9srK4V478xEK_PVNsnIjcn_rbLA7IzNJ2tcoJ--PcteEJbJqlILst5SNFmA
+@GRAPHQL_QUERY = query paginateProducts { site { products (first: 3) { pageInfo { startCursor endCursor } edges { cursor node {  entityId name defaultImage { urlOriginal }}}}}}
+
+POST https://api.bigcommerce.com/stores/{{STORE_HASH}}/v3/content/widget-templates
+Host: api.bigcommerce.com
+X-Auth-Token: {{ACCESS_TOKEN}}
+X-Auth-Client: {{CLIENT_ID}}
+Content-Type: application/json
+Accept: application/json
+
+{
+  "name": "Header Images v6",
+  "template": "{{#each images}}<a href='{{image_url}}'><img src={{image_source}} style='width:33.3%'/></a>{{/each}}", 
+  "schema": [
+    {
+      "type": "tab",
+      "label": "Design",
+      "id": "ImageWidget",
+      "sections": [
+        {
+          "type": "array",
+          "label": "Images",
+          "id": "images",
+          "defaultCount": 3,
+          "settings": [
+            {
+              "type": "imageManager",
+              "thumbnail": "imageUrl",
+              "label": "image",
+              "id": "imageUrl",
+              "default": {
+                "image_url": "https://images.unsplash.com/photo-1487700160041-babef9c3cb55?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=2000&q=80",
+                "image_source": "https://images.unsplash.com/photo-1487700160041-babef9c3cb55?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=2000&q=80",
+                "type": "IMAGE_MANAGER"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
+
+# stopped here while trying to feed from graphql
+###
+#Create a widget.
+POST https://api.bigcommerce.com/stores/{{STORE_HASH}}/v3/content/widgets
+Host: api.bigcommerce.com
+Authorization: {{STOREFRONT_API}}
+X-Auth-Token: {{ACCESS_TOKEN}}
+X-Auth-Client: {{CLIENT_ID}}
+Content-Type: application/json
+Accept: application/json
+
+{
+  "name": "Bannerv6",
+  "storefront_api_query": "{{GRAPHQL_QUERY}}",
+  "widget_configuration": {
+    "images": [
+      {
+        "image_source": "https://cdn11.bigcommerce.com/s-n0i50vy/images/stencil/500x659/products/91/309/thekinfolktablecover_1024x1024__80715.1456436719.jpg?c=2&imbypass=on"
+      },
+      {
+        "image_source": "https://cdn11.bigcommerce.com/s-n0i50vy/images/stencil/500x659/products/109/361/kinfolkessentialissue_1024x1024__22507.1456436715.jpg?c=2&imbypass=on"
+      },
+      {
+        "image_source": "https://cdn11.bigcommerce.com/s-n0i50vy/images/stencil/500x659/products/85/282/livingwithplants_grande__26452.1456436666.jpg?c=2&imbypass=on"
+      }
+    ]
+  },
+  "widget_template_uuid": "86b21d2d-10e2-4486-a61a-a20ddcf44868"
+}
+
+  # "widget_template_uuid": "d6352709-2529-4164-a643-60a0f23a004b"
+
+###
+#Create a placement for widget, place widget uuid into body of this request.
+POST https://api.bigcommerce.com/stores/{{STORE_HASH}}/v3/content/placements
+Host: api.bigcommerce.com
+X-Auth-Token: {{ACCESS_TOKEN}}
+X-Auth-Client: {{CLIENT_ID}}
+Content-Type: application/json
+Accept: application/json
+
+{
+  "widget_uuid": "873c83f5-351d-4c32-b6af-b2c9964340c1",
+  "sort_order": 1,
+  "region": "header_bottom--global",
+  "template_file": "pages/home",
+  "status": "active"
+}
