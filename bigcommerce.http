@@ -8,6 +8,7 @@ closest I've gotten...
 @STOREFRONT_API = Bearer
 @GRAPHQL_QUERY = query paginateProducts { site { products (first: 3) { pageInfo { startCursor endCursor } edges { cursor node {  entityId name defaultImage { urlOriginal }}}}}}
 
+###
 POST https://api.bigcommerce.com/stores/{{STORE_HASH}}/v3/content/widget-templates
 Host: api.bigcommerce.com
 X-Auth-Token: {{ACCESS_TOKEN}}
@@ -75,10 +76,9 @@ Accept: application/json
       }
     ]
   },
-  "widget_template_uuid": "86b21d2d-10e2-4486-a61a-a20ddcf44868"
+  "widget_template_uuid": "003c3317-a65d-469d-82d3-88ade8b54726"
 }
 
-  # "widget_template_uuid": "d6352709-2529-4164-a643-60a0f23a004b"
 
 ###
 #Create a placement for widget, place widget uuid into body of this request.
@@ -90,9 +90,48 @@ Content-Type: application/json
 Accept: application/json
 
 {
-  "widget_uuid": "873c83f5-351d-4c32-b6af-b2c9964340c1",
+  "widget_uuid": "d66f9f3c-650b-410a-a20a-e36e8425b8d9",
   "sort_order": 1,
   "region": "header_bottom--global",
   "template_file": "pages/home",
   "status": "active"
 }
+
+
+
+###
+#Get graphQL token
+POST https://api.bigcommerce.com/stores/{{STORE_HASH}}/v3/storefront/api-token
+X-Auth-Token: {{ACCESS_TOKEN}}
+X-Auth-Client: {{CLIENT_ID}}
+Content-Type: application/json
+Accept: application/json
+
+{
+  "channel_id": 1,
+  "expires_at": 1802288000,
+  "allowed_cors_origins": [
+    "{{STORE_DOMAIN}}"
+  ]
+}
+
+
+# graphql to get 3 prds with images
+###
+POST https://store-{{STORE_HASH}}.mybigcommerce.com/graphql
+Authorization: {{STOREFRONT_API}}
+Content-Type: application/json
+
+{
+  "query": "query paginateProducts {\n site {\n products (first: 3) {\n pageInfo {\n startCursor\n endCursor\n }\n edges {\n cursor\n node {\n  entityId\n name\n defaultImage\n {\n urlOriginal }\n}\n}\n}\n}\n}"
+}
+
+# gets images for a product
+@PRODUCT_ID = 77
+###
+GET https://api.bigcommerce.com/stores/{{STORE_HASH}}/v3/catalog/products/{{PRODUCT_ID}}/images
+Authorization: {{STOREFRONT_API}}
+X-Auth-Token: {{ACCESS_TOKEN}}
+X-Auth-Client: {{CLIENT_ID}}
+Content-Type: application/json
+Accept: application/json
